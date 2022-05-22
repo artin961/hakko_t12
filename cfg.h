@@ -3,6 +3,7 @@
 #include <Arduino.h>
 #include "iron_tips.h"
 #include "vars.h"
+//#define DEBUGEEE
 /*
  * First 504 bytes of EEPROM are allocated to store the calibration tip data (see iron_tips.h)
  * The EEPROM space starting from 512 is used to store the controller configuration data
@@ -71,14 +72,13 @@ class IRON_CFG : public CONFIG, public TIPS {
         uint8_t     lowTimeout(void)            { return Config.low_to;                 }
         bool        isReedType(void)            { return Config.bit_mask & CFG_SWITCH;  }
         bool        isAmbientSensor(void)       { return Config.bit_mask & CFG_THERM;   }
-        void        setLowPower(uint16_t low_temp, uint8_t low_to, bool reed);
         uint16_t    humanToTemp(uint16_t temp, int16_t ambient); // Translate the human readable temperature into internal value
         uint16_t    tempToHuman(uint16_t temp, int16_t ambient); // Translate temperature from internal units to the human readable value (Celsius or Fahrenheit)
         uint8_t     selectTip(uint8_t index);   // Select new tip, return selected tip index
         bool        savePresetTempHuman(uint16_t temp); // Save preset temperature in the human readable units
         bool        savePresetTemp(uint16_t temp); // Save preset temperature in the internal units (convert it to the human readable units)
         void        applyCalibration(uint16_t tip[3]);  // Apply calibration data, used during calibration procedure
-        void        saveConfig(uint8_t off, bool cels, bool buzzer, bool ambient); // Save global configuration parameters
+        void        saveConfig(uint8_t off, bool cels, bool buzzer, bool ambient,uint16_t low_temp, uint8_t low_to, bool reed); // Save global configuration parameters
         void        getCalibrationData(uint16_t tip[3]);
         void        saveCalibrationData(uint16_t tip[3], int8_t ambient);
         uint8_t     nextTip(uint8_t index, bool forward = true);    // look for next customized tip

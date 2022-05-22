@@ -17,7 +17,7 @@
  */
 typedef struct s_tip TIP;
 struct s_tip {
-    char        tip_name[tip_name_sz];                          // The TIP name
+    char        tip_name[tip_name_sz];                          // The TIP name 5 bytes
     uint32_t    calibration_data;                               // The temperature calibration data for soldering tips. (3 reference points: 200, 300, 400 Centigrades)
     uint8_t     mask;                                           // The bit mask: TIP_ACTIVE + TIP_CALIBRATED
     int8_t      ambient;                                        // The ambient temperature in Celsius when the tip being calibrated
