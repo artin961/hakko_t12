@@ -2,7 +2,7 @@
 
 const uint16_t default_temperature = 240;       // Default value of IRON temperature
 const uint16_t temp_max  = 950;                 // Maximum possible temperature in internal units
-const uint16_t temp_minC = 180; ///ARTIN CHANGED ORIGINAL 180                // Minimum calibration temperature in degrees of Celsius
+const uint16_t temp_minC = 180;                 // Minimum calibration temperature in degrees of Celsius
 const uint16_t temp_maxC = 450;                 // Maximum calibration temperature in degrees of Celsius
 const uint16_t temp_minF = (temp_minC *9 + 32*5 + 2)/5;
 const uint16_t temp_maxF = (temp_maxC *9 + 32*5 + 2)/5;

@@ -12,6 +12,6 @@
  * Each custom tip data requires 12 bytes in EEPROM, 504 bytes per 42 tips are required.
  * 
  */
-#define MAX_CUSTOM_TIPS (32)
+#define MAX_CUSTOM_TIPS (30)
 
 #endif

@@ -1339,17 +1339,13 @@ void calibSCREEN::init(void) {
   if (!pCfg->isCelsius()) {
     min_t 	=  122;
     max_t 	= 1111;
-    cels = false;
+    cels = false;///artin
   }
   pEnc->reset(0, min_t, max_t, 1, 5, false);
   tip_temp_max = temp_max / 2;
   for (uint8_t i = 0; i < MCALIB_POINTS; ++i) {
     calib_temp[0][i] = 0;					// Real temperature. 0 means not entered yet
     calib_temp[1][i] = map(i, 0, MCALIB_POINTS - 1, start_int_temp, tip_temp_max); // Internal temperature
-#ifdef DEBUGEEE
-    Serial.print("  [0][i]" + String(calib_temp[0][i]));
-    Serial.print("  [1][i]" + String(calib_temp[1][i]));
-#endif
   }
   ready 			= false;                    // Not ready to enter real temperature
 

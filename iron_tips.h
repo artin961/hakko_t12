@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 // The length of the tip name
-#define	 	tip_name_sz		(5)
+#define    tip_name_sz   (5)
 
 /*
  * The custip TIP structure, 12 bytes
@@ -17,7 +17,7 @@
  */
 typedef struct s_tip TIP;
 struct s_tip {
-    char        tip_name[tip_name_sz];                          // The TIP name 5 bytes
+    char        tip_name[tip_name_sz];                          // The TIP name
     uint32_t    calibration_data;                               // The temperature calibration data for soldering tips. (3 reference points: 200, 300, 400 Centigrades)
     uint8_t     mask;                                           // The bit mask: TIP_ACTIVE + TIP_CALIBRATED
     int8_t      ambient;                                        // The ambient temperature in Celsius when the tip being calibrated
@@ -27,10 +27,10 @@ struct s_tip {
 typedef enum tip_status { TIP_ACTIVE = 1, TIP_CALIBRATED = 2 } TIP_STATUS;
 
 class TIPS {
-	public:
-		TIPS()										            { }
-		uint16_t		tipsLoaded(void);
-		bool            name(char tip_n[tip_name_sz], uint8_t index);
+  public:
+    TIPS()                                { }
+    uint16_t    tipsLoaded(void);
+    bool            name(char tip_n[tip_name_sz], uint8_t index);
         int8_t          index(const char name[tip_name_sz]);    // Tip idex in global list or -1 if not found
 };
 
