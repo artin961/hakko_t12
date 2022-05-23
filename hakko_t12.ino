@@ -1332,24 +1332,21 @@ class calibSCREEN : public SCREEN {
 
 void calibSCREEN::init(void) {
   pIron->switchPower(false);
-  cels = true;
   // Prepare to enter real temperature
-  uint16_t min_t 		= 50;
-  uint16_t max_t		= 600;
+  uint16_t min_t    = 50;
+  uint16_t max_t    = 600;
   if (!pCfg->isCelsius()) {
-    min_t 	=  122;
-    max_t 	= 1111;
-    cels = false;///artin
+    min_t   =  122;
+    max_t   = 1111;
   }
   pEnc->reset(0, min_t, max_t, 1, 5, false);
   tip_temp_max = temp_max / 2;
   for (uint8_t i = 0; i < MCALIB_POINTS; ++i) {
-    calib_temp[0][i] = 0;					// Real temperature. 0 means not entered yet
+    calib_temp[0][i] = 0;         // Real temperature. 0 means not entered yet
     calib_temp[1][i] = map(i, 0, MCALIB_POINTS - 1, start_int_temp, tip_temp_max); // Internal temperature
   }
-  ready 			= false;                    // Not ready to enter real temperature
-
-  ref_temp_index	= 0;
+  ready       = false;                    // Not ready to enter real temperature
+  ref_temp_index  = 0;
   pD->tRef(ref_temp_index);
   preset_temp = pIron->presetTemp();          // Save the preset temperature in human readable units
   int16_t ambient = pIron->ambientTemp();
@@ -1362,8 +1359,8 @@ void calibSCREEN::init(void) {
 SCREEN* calibSCREEN::show(void) {
   if (millis() < update_screen) return this;
   update_screen = millis() + period;
-  int16_t temp		= pIron->tempAverage(); // Actual IRON temperature
-  int16_t temp_set	= pIron->presetTemp();
+  int16_t temp    = pIron->tempAverage(); // Actual IRON temperature
+  int16_t temp_set  = pIron->presetTemp();
   int16_t ambient     = pIron->ambientTemp();
   uint16_t tempH      = pCfg->tempToHuman(temp, ambient);
   if (ready) {
@@ -1380,7 +1377,7 @@ SCREEN* calibSCREEN::show(void) {
     ready = true;
     pEnc->write(tempH);
   }
-  if (ready && !pIron->isOn()) {          	// The IRON was switched off by error
+  if (ready && !pIron->isOn()) {            // The IRON was switched off by error
     pD->msgOff();
     ready = false;
   }
@@ -1394,10 +1391,10 @@ void calibSCREEN::rotaryValue(int16_t value) {	// The Encoder rotated
   }
 }
 
-SCREEN* calibSCREEN::menu(void) {				// Rotary encoder pressed
+SCREEN* calibSCREEN::menu(void) {        // Rotary encoder pressed
   if (ready) {                                // The real temperature has been entered
     uint16_t r_temp = pEnc->read();
-    uint16_t temp   = pIron->tempAverage();	// The temperature of the IRON in internal units
+    uint16_t temp   = pIron->tempAverage(); // The temperature of the IRON in internal units
     pIron->switchPower(false);
     pD->msgOff();
     if (!cels)                                // Always save the human readable temperature in Celsius
@@ -1405,7 +1402,7 @@ SCREEN* calibSCREEN::menu(void) {				// Rotary encoder pressed
     calib_temp[0][ref_temp_index] = r_temp;
     calib_temp[1][ref_temp_index] = temp;
     if (r_temp < temp_maxC - 20) {
-      updateReference(ref_temp_index);	// Update reference temperature points
+      updateReference(ref_temp_index);  // Update reference temperature points
       ++ref_temp_index;
       // Try to update the current tip calibration
       uint16_t tip[3];
@@ -1415,12 +1412,13 @@ SCREEN* calibSCREEN::menu(void) {				// Rotary encoder pressed
     }
     if ((r_temp >= temp_maxC - 20) || ref_temp_index >= MCALIB_POINTS) {
       return menu_long();                 // Finish calibration
-    } else {								// Continue calibration
+    } else {                // Continue calibration
       uint16_t temp = calib_temp[1][ref_temp_index];
       pIron->setTemp(temp);
       pIron->switchPower(true);
+       pD->msgOn();
     }
-  } else {									// Toggle the power
+  } else {                  // Toggle the power
     if (pIron->isOn()) {
       pIron->switchPower(false);
       pD->msgOff();
