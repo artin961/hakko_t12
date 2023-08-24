@@ -24,7 +24,6 @@
 #define NTC_AMBIENT_TEMP 25   //REFERENCE FOR THE RESISTANCE
 #define NTC_BETA 3977         ///NTC BETA VALUE
 #define NTC_PULLUP 10000      //10k PULLUP RESISTOR
-#define DISPLAY_LOGO "ALab"
 
 
 #define ABSORBER_PIN 1  //TX PIN AS AABSORBER OPTOCOUPLER OUT
@@ -1920,7 +1919,7 @@ void loop() {
     pCurrentScreen->init();
   }
 
-  if (iron.checkSWStatus() && pCurrentScreen == &wrkScr) {
+  if (iron.checkSWStatus() && pCurrentScreen == &wrkScr) {//checks status and returns if changed to reset the timeout
     pCurrentScreen->resetTimeout();
   }
 

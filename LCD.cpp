@@ -1,7 +1,7 @@
 #include "config.h"
 #include "LCD.h"
 #include "iron_tips.h"
-#define DISPLAY_LOGO "      ALab"
+#define DISPLAY_LOGO "ALab"
 
 
 
