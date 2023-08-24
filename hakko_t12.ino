@@ -1332,12 +1332,14 @@ class calibSCREEN : public SCREEN {
 
 void calibSCREEN::init(void) {
   pIron->switchPower(false);
+  cels = true;
   // Prepare to enter real temperature
   uint16_t min_t    = 50;
   uint16_t max_t    = 600;
   if (!pCfg->isCelsius()) {
     min_t   =  122;
     max_t   = 1111;
+    cels  = false;
   }
   pEnc->reset(0, min_t, max_t, 1, 5, false);
   tip_temp_max = temp_max / 2;
@@ -1345,14 +1347,17 @@ void calibSCREEN::init(void) {
     calib_temp[0][i] = 0;         // Real temperature. 0 means not entered yet
     calib_temp[1][i] = map(i, 0, MCALIB_POINTS - 1, start_int_temp, tip_temp_max); // Internal temperature
   }
-  ready       = false;                    // Not ready to enter real temperature
+  ready = false;
   ref_temp_index  = 0;
+  pD->clear();
   pD->tRef(ref_temp_index);
   preset_temp = pIron->presetTemp();          // Save the preset temperature in human readable units
   int16_t ambient = pIron->ambientTemp();
   preset_temp = pCfg->tempToHuman(preset_temp, ambient);
-  pD->clear();
-  pD->msgOff();
+  uint16_t temp = calib_temp[1][ref_temp_index];
+  pIron->setTemp(temp);
+  pIron->switchPower(true);
+  pD->msgOn();
   forceRedraw();
 }
 
@@ -1416,7 +1421,7 @@ SCREEN* calibSCREEN::menu(void) {        // Rotary encoder pressed
       uint16_t temp = calib_temp[1][ref_temp_index];
       pIron->setTemp(temp);
       pIron->switchPower(true);
-       pD->msgOn();
+      pD->msgOn();
     }
   } else {                  // Toggle the power
     if (pIron->isOn()) {
@@ -1437,7 +1442,7 @@ SCREEN* calibSCREEN::menu_long(void) {    	// Save new tip calibration data
   pIron->switchPower(false);
   uint16_t tip[3];
   if (calibrationOLS(tip, 150, temp_maxC)) {
-    uint8_t near_index	= closestIndex(temp_tip[2]);
+    uint8_t near_index  = closestIndex(temp_tip[2]);
     tip[2] = map(temp_tip[2], temp_tip[1], calib_temp[0][near_index],
                  tip[1], calib_temp[1][near_index]);
     if (tip[2] > temp_max) tip[2] = temp_max;
