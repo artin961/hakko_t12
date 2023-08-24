@@ -9,7 +9,7 @@ void DSPL::init(void) {
   LiquidCrystal::begin(16, 2);
   LiquidCrystal::clear();
   full_second_line = false;
-  LiquidCrystal::setCursor(0, 0);
+  LiquidCrystal::setCursor(6, 0);
   LiquidCrystal::print(F(DISPLAY_LOGO));
   delay(1500);
   LiquidCrystal::clear();

@@ -1,7 +1,7 @@
 #ifndef _DSPL0802_H
 #define _DSPL0802_H
 #include "config.h"
-#include <LiquidCrystal.h>
+#include "LiquidCrystal.h"
 
 
 // The LCD 0802 parallel interface
