@@ -4,7 +4,7 @@
 
 #include "PID.h"
 #include "EmpAvarage.h"
-#include "config.h"
+#include "Config.h"
 #include "vars.h"
 
 class FastPWM {
@@ -35,7 +35,7 @@ class IRON : protected PID {
                    POWER_COOLING
                  } PowerMode;
     void init(void);
-    void switchPower(bool On);
+    void switchPower(bool on);
     bool isOn(void);
     uint16_t presetTemp(void) {
       return temp_set;
@@ -101,7 +101,7 @@ class IRON : protected PID {
     EMP_AVERAGE tilt;                                        // The average value of tilt port
     volatile EMP_AVERAGE amb_int;                            // The internal reading of ambient temperature
     bool tilt_toggle = false;                                // The tilt switch changed state
-    const uint8_t max_power = 210;                           // maximum power to the IRON
+    const uint8_t max_power = CONFIG_IROM_MAX_POWER;                           // maximum power to the IRON
     const uint8_t max_fixed_power = 120;                     // Maximum power in fixed power mode
     const uint16_t min_curr = 10;                            // The minimum current value to check the IRON is connected
     const uint32_t check_period = 503;                       // Check the iron period in ms

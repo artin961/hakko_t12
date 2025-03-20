@@ -1,7 +1,7 @@
 #ifndef _EMP_AVARAGE_H_
 #define _EMP_AVARAGE_H_
 #include <Arduino.h>
-#include "config.h"
+#include "Config.h"
 
 // ------------------------------------------ class Exponential Moving Average ----------------------------------------------------
 class EMP_AVERAGE

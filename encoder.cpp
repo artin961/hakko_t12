@@ -100,11 +100,9 @@ RENC::RENC(int16_t init_pos) : BUTTON() {
 void RENC::init(void) {
   BUTTON::init();
   // ENSURE INPUTS
-  ENCODER_DDR &= ~ENCODER_DATA_BITMASK;
-  ENCODER_DDR &= ~ENCODER_CLOCK_BITMASK;
+  ENCODER_DDR &= ~(ENCODER_DATA_BITMASK | ENCODER_CLOCK_BITMASK);
   // ACTIOVATE PULLUPS
-  ENCODER_PORT |= ENCODER_DATA_BITMASK;
-  ENCODER_PORT |= ENCODER_CLOCK_BITMASK;
+  ENCODER_PORT |= (ENCODER_DATA_BITMASK | ENCODER_CLOCK_BITMASK);
 
   // Configure external interrupt INT1 to trigger on any logical change
   EICRA |= (1 << ISC10);  // ISC10=1 and ISC11=0 for triggering on logical change

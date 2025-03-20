@@ -1,22 +1,20 @@
 #ifndef _DSPL1602_H_
 #define _DSPL1602_H_
-#include "config.h"
+#include "Config.h"
 #include "LiquidCrystal.h"
 #include "iron_tips.h"
-
-// The LCD 0802 parallel interface
-const uint8_t LCD_RS_PIN = 13;
-const uint8_t LCD_E_PIN = 12;
-const uint8_t LCD_DB4_PIN = 5;
-const uint8_t LCD_DB5_PIN = 6;
-const uint8_t LCD_DB6_PIN = 7;
-const uint8_t LCD_DB7_PIN = 8;
 
 class DSPL : protected LiquidCrystal
 {
   public:
-    DSPL(void) : LiquidCrystal(LCD_RS_PIN, LCD_E_PIN, LCD_DB4_PIN, LCD_DB5_PIN, LCD_DB6_PIN, LCD_DB7_PIN) {}
+    DSPL(void) : LiquidCrystal() {}
     void init(void);
+    void backlight(void) {
+      LiquidCrystal::backlight();
+    }
+    void noBacklight(void) {
+      LiquidCrystal::noBacklight();
+    }
     void clear(void)
     {
       LiquidCrystal::clear();
@@ -27,7 +25,7 @@ class DSPL : protected LiquidCrystal
     void pSet(uint8_t p);                     // Show the power set
     void tRef(uint8_t ref);                   // Show the reference temperature index
     void timeToOff(uint8_t sec);              // Show the time to automatic off the IRON
-    void msgStateMsg(const char* message);
+    void msgStateMsg(const char* message, uint8_t row = 0);
     void msgReady(void) {
       msgStateMsg("ON"); // Show 'Ready' message
     }
@@ -51,6 +49,5 @@ class DSPL : protected LiquidCrystal
     void mark(char sym, bool on);                            // Show mark sign if true
     void calibrated(bool calibrated);                        // Show '*' if the tip was not calibrated
   private:
-    bool full_second_line; // Whether the second line is full with the message
 };
 #endif

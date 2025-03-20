@@ -29,7 +29,7 @@ void IRON::init(void) {
   applied_power = 0;
   disconnected = true;  // Do not read the ambient temperature when the IRON is connected
   check_iron_ms = 0;
-  resetPID(analogRead(sPIN));
+  resetPID(h_temp.read());
   h_counter = h_max_counter;
   h_power.init();
   h_temp.init();
@@ -39,7 +39,7 @@ void IRON::init(void) {
 
 void IRON::setTemp(uint16_t t) {
   if (mode == POWER_ON)
-    resetPID(analogRead(sPIN));
+    resetPID(h_temp.read());
   temp_set = t;
   uint16_t ta = h_temp.average();
   chill = (ta > t + 5);  // The IRON must be cooled
@@ -50,7 +50,7 @@ void IRON::lowPowerMode(uint16_t t) {
   if ((mode == POWER_ON && t < temp_set) || t == 0)
     temp_low = t;  // Activate low power mode
   if (t == 0)      //IF GET OUT OF LOW POWER MODE RESET PID
-    resetPID(analogRead(sPIN));
+    resetPID(h_temp.read());
 }
 
 uint8_t IRON::getAvgPower(void) {
@@ -63,17 +63,17 @@ uint8_t IRON::appliedPower(void) {
   return map(p, 0, max_power, 0, 100);
 }
 
-void IRON::switchPower(bool On) {
-  if (!On) {
+void IRON::switchPower(bool on) {
+  if (!on) {
     fastPWM.off();
     fix_power = 0;
-    //digitalWrite(lcdled_PIN, LOW);
-    digitalWrite(ledPIN, LOW);
+    LED_PORT &= ~LED_BITMASK;
+    //disp->noBacklight();
     if (mode != POWER_OFF)
       mode = POWER_COOLING;
     return;
   }
-  digitalWrite(lcdled_PIN, HIGH);
+  //disp->backlight();
   h_power.init();
   mode = POWER_ON;
   lowPowerMode(0);  //GET OUT OF LOW POWER MODE AND RESET PID resetting is handled in lowPowerMode() Artins fix
@@ -90,7 +90,7 @@ bool IRON::checkIron(void) {
   check_iron_ms = millis() + check_period;
   uint16_t curr = 0;
   if (applied_power == 0) {            // The IRON is switched-off
-    fastPWM.duty(127);                 // Quarter of maximum power
+    fastPWM.duty(50);                 // Quarter of maximum power
     for (uint8_t i = 0; i < 5; ++i) {  // Make sure we check the current in active phase of PWM signal
       delayMicroseconds(31);
       uint16_t c = analogRead(cPIN);  // Check the current through the IRON
@@ -137,7 +137,6 @@ void IRON::keepTemp(void) {
       break;
     case POWER_COOLING:
       if (h_temp.average() < iron_cold) {
-        //digitalWrite(lcdled_PIN, LOW);
         mode = POWER_OFF;
       }
 
@@ -146,7 +145,7 @@ void IRON::keepTemp(void) {
       if (chill) {
         if (t < (t_set - 2)) {
           chill = false;
-          resetPID(analogRead(sPIN));
+          resetPID(h_temp.read());
         } else {
           break;
         }

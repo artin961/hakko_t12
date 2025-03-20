@@ -5,7 +5,7 @@
 class PID
 {
   public:
-    PID() : temp_h0(0), temp_h1(0), pid_iterate(false), i_summ(0), power(0), Kp(2009), Ki(16), Kd(2048) {}
+    PID() : temp_h0(0), temp_h1(0), pid_iterate(false), i_summ(0), power(0), Kp(3000), Ki(50), Kd(2048) {}
 
     void resetPID(int temp = -1); // reset PID algorithm history parameters
     // Calculate the power to be applied

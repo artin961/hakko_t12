@@ -42,28 +42,35 @@
 #define LCD_5x10DOTS 0x04
 #define LCD_5x8DOTS 0x00
 
+
+#define BACKLIGHT_DDR DDRB
+#define BACKLIGHT_PORT PORTB
+#define BACKLIGHT_BITMASK 0b00000010
+
+
+
+#define RS_EN_DDR DDRB
+#define RS_EN_PORT PORTB
+#define RS_BITMASK 0b00100000
+#define EN_BITMASK 0b00010000
+
+#define D012_DDR DDRD
+#define D012_PORT PORTD
+#define D3_DDR DDRB
+#define D3_PORT PORTB
+#define D012_BITMASK 0b11100000
+#define D3_BITMASK 0b00000001
+
 class LiquidCrystal : public Print {
 public:
-  LiquidCrystal(uint8_t rs, uint8_t enable,
-		uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
-		uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
-  LiquidCrystal(uint8_t rs, uint8_t rw, uint8_t enable,
-		uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
-		uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
-  LiquidCrystal(uint8_t rs, uint8_t rw, uint8_t enable,
-		uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
-  LiquidCrystal(uint8_t rs, uint8_t enable,
-		uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3);
+  LiquidCrystal();
 
-  void init(uint8_t fourbitmode, uint8_t rs, uint8_t rw, uint8_t enable,
-	    uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
-	    uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7);
-    
   void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS);
 
   void clear();
   void home();
-
+  void backlight();
+  void noBacklight();
   void noDisplay();
   void display();
   void noBlink();
@@ -77,7 +84,7 @@ public:
   void autoscroll();
   void noAutoscroll();
 
-  void setRowOffsets(int row1, int row2, int row3, int row4);
+  void setRowOffsets(int row1, int row2);
   void createChar(uint8_t, uint8_t[]);
   void setCursor(uint8_t, uint8_t); 
   virtual size_t write(uint8_t);
@@ -85,15 +92,9 @@ public:
   
   using Print::write;
 private:
-  void send(uint8_t, uint8_t);
+  void send(uint8_t);
   void write4bits(uint8_t);
-  void write8bits(uint8_t);
-  void pulseEnable();
-
-  uint8_t _rs_pin; // LOW: command.  HIGH: character.
-  uint8_t _rw_pin; // LOW: write to LCD.  HIGH: read from LCD.
-  uint8_t _enable_pin; // activated by a HIGH pulse.
-  uint8_t _data_pins[8];
+  uint8_t _data_pins[4];
 
   uint8_t _displayfunction;
   uint8_t _displaycontrol;
@@ -102,7 +103,7 @@ private:
   uint8_t _initialized;
 
   uint8_t _numlines;
-  uint8_t _row_offsets[4];
+  uint8_t _row_offsets[2];
 };
 
 #endif

@@ -11,12 +11,14 @@
 #define MAX_CUSTOM_TIPS (30)
 #define MCALIB_POINTS 8
 #define CONFIG_DISPLAY_TIME 1000
+#define CONFIG_IROM_MAX_POWER 250
 #define DISPLAY_LOGO "ALab"
 
 // FIXED HEATER CONFIG
 #define HEATER_DDR DDRB
 #define HEATER_PORT PORTB
 #define HEATER_BITMASK 0b00000100
+
 
 
 // FIXED ROTARY ENCODER CONFIG
@@ -32,6 +34,10 @@
 #define BUZZER_PORT PORTB
 #define BUZZER_BITMASK 0b00001000
 
+// FIXED LED CONFIG
+#define LED_DDR DDRC
+#define LED_PORT PORTC
+#define LED_BITMASK 0b00010000
 
 #define NTC_RESISTANCE 10000  //10k
 #define NTC_AMBIENT_TEMP 25   //REFERENCE FOR THE RESISTANCE
@@ -46,7 +52,6 @@
 #define ADC_THERMISTOR A2          // The thermistor pin to check ambient temperature
 #define ADC_TILT_REED A3          // The tilt/reed switch pin
 #define lcdled_PIN 9          // The simple buzzer to make a noise
-#define ledPIN 18             // The simple buzzer to make a noise
 
 
 

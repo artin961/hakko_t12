@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 #include "IronConfig.h"
 #include "vars.h"
-#include "config.h"
+#include "Config.h"
 
 //------------------------------------------ Configuration data ------------------------------------------------
 CONFIG::CONFIG(uint8_t max_custom_tips) {

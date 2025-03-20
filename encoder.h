@@ -2,7 +2,7 @@
 #define _ENCODER_H_
 
 #include "EmpAvarage.h"
-#include "config.h"
+#include "Config.h"
 
 //------------------------------------------ class BUTTON ------------------------------------------------------
 class BUTTON {
@@ -22,7 +22,7 @@ class BUTTON {
     uint32_t            b_check         = 0;            // Time in ms when the button should be checked
     uint32_t            tick_time       = 0;            // Time in ms when the last 'tick' was generated
     uint16_t            tick_period     = 0;            // Repeat 'tick' period
-    const uint8_t       trigger_on      = 60;          // avg limit to change button status to on
+    const uint8_t       trigger_on      = 30;           // avg limit to change button status to on
     const uint8_t       trigger_off     = 30;           // avg limit to change button status to off
     const uint8_t       avg_length      = 4;            // avg length
     const uint8_t       b_check_period  = 20;           // The button check period, ms

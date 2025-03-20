@@ -6,7 +6,7 @@
 #include "Encoder.h"
 #include "Buzzer.h"
 #include "IronConfig.h"
-#include "config.h"
+#include "Config.h"
 
 class SCREEN {
   public:

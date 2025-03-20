@@ -7,10 +7,9 @@ const char *modes[] = {
 void DSPL::init(void) {
   LiquidCrystal::begin(16, 2);
   LiquidCrystal::clear();
-  full_second_line = false;
   LiquidCrystal::setCursor(6, 0);
   LiquidCrystal::print(F(DISPLAY_LOGO));
-  delay(1500);
+  delay(1000);
   LiquidCrystal::clear();
 }
 
@@ -49,10 +48,6 @@ void DSPL::tCurr(uint16_t t) {
     return;
   }
   LiquidCrystal::print(buff);
-  if (full_second_line) {
-    LiquidCrystal::print(F("            "));
-    full_second_line = false;
-  }
 }
 
 void DSPL::pSet(uint8_t  p) {
@@ -77,7 +72,7 @@ void DSPL::timeToOff(uint8_t  sec) {
   LiquidCrystal::print(F("    "));
 }
 
-void DSPL::msgStateMsg(const char* message) {
+void DSPL::msgStateMsg(const char* message, uint8_t row = 0) {
   char buffer[9]; // Buffer for 8 characters + null terminator
   int len = strlen(message);
 
@@ -93,19 +88,17 @@ void DSPL::msgStateMsg(const char* message) {
 
   buffer[8] = '\0'; // Null-terminate the string
 
-  LiquidCrystal::setCursor(8, 0); // Start printing from (8,0)
+  LiquidCrystal::setCursor(8, row); // Start printing from (8,0)
   LiquidCrystal::print(buffer); // Print to LCD
 }
 
 void DSPL::msgCold(void) {
-  LiquidCrystal::setCursor(0, 1);
-  LiquidCrystal::print(F("        COLD"));
-  full_second_line = true;
+  msgStateMsg("COLD", 1);
 }
 
 void DSPL::msgFail(void) {
   LiquidCrystal::setCursor(0, 1);
-  LiquidCrystal::print(F("   Failed  "));
+  LiquidCrystal::print(F("Heater Failed!"));
 }
 void DSPL::msgTune(void) {
   LiquidCrystal::setCursor(0, 0);
@@ -116,7 +109,7 @@ void DSPL::msgTune(void) {
 
 void DSPL::msgDefault() {
   LiquidCrystal::setCursor(0, 1);
-  LiquidCrystal::print(F(" default        "));
+  LiquidCrystal::print(F("Default...     "));
 }
 
 void DSPL::setupMode(uint8_t mode, bool tune, uint16_t p, bool celsius)

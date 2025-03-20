@@ -184,9 +184,14 @@ void workSCREEN::rotaryValue(int16_t value) {  // Setup new preset temperature b
 
 SCREEN* workSCREEN::render(uint32_t ms) {
   SCREEN* nxt = this;
-  pIron->checkIron();  // Check that the IRON is connected
-  led = !led || ready;
-  digitalWrite(ledPIN, led);
+  if (no_iron && pIron->checkIron()) {  // Check that the IRON is connected
+    nxt = no_iron;
+  }
+  if (ready)
+    LED_PORT |= LED_BITMASK;
+  else
+    LED_PORT ^= LED_BITMASK;
+
   int16_t temp = pIron->tempAverage();
   int16_t temp_set = pIron->presetTemp();
   int16_t ambient = pIron->ambientTemp();

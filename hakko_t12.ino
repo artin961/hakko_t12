@@ -11,9 +11,8 @@
 */
 //#define DEBUGEEE
 // Edit the configuration file to select appropriate display type
-#include <EEPROM.h>
-#include "config.h"
-#include "encoder.h"
+#include "Config.h"
+#include "Encoder.h"
 #include "iron_tips.h"
 #include "vars.h"
 #include <avr/wdt.h> /* Header for watchdog timers in AVR */
@@ -82,13 +81,11 @@ void setup() {
   Serial.begin(115200);
 #endif
 
-  pinMode(lcdled_PIN, OUTPUT);
-  pinMode(ledPIN, OUTPUT);
-  digitalWrite(ledPIN, HIGH);
-  digitalWrite(lcdled_PIN, HIGH);
-
+  LED_PORT &= ~LED_BITMASK;
+  LED_DDR |= LED_BITMASK;
 
   disp.init();
+  disp.backlight();
   // Load configuration parameters
   ironCfg.init();
   iron.init();
@@ -108,7 +105,7 @@ void setup() {
   // Initialize rotary encoder
   encoder.init();
   wdt_reset(); /* Reset the watchdog */
-  delay(500);
+  //delay(500);
   //attachInterrupt(digitalPinToInterrupt(R_MAIN_PIN), rotEncChange, CHANGE);
 
   // Initialize SCREEN hierarchy
@@ -119,6 +116,7 @@ void setup() {
   wrkScr.next = &offScr;
   wrkScr.nextL = &pwrScr;
   wrkScr.main = &offScr;
+  offScr.no_iron = &errScr;
 
   errScr.next = &offScr;
   errScr.nextL = &offScr;
