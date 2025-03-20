@@ -145,7 +145,7 @@ void IRON_CFG::init(void) {
 
 // Translate the human readable temperature into internal value
 uint16_t IRON_CFG::humanToTemp(uint16_t t, int16_t ambient) {
-  if (tip_mask & CFG_THERM == 0) ambient = ambient_tempC; 
+  if (tip_mask & CFG_THERM == 0) ambient = ambient_tempC;
   if (isCelsius()) {
     t = constrain(t, temp_minC, temp_maxC);
   } else {
@@ -187,7 +187,7 @@ uint16_t IRON_CFG::humanToTemp(uint16_t t, int16_t ambient) {
 
 // Thanslate temperature from internal units to the human readable value (Celsius or Fahrenheit)
 uint16_t IRON_CFG::tempToHuman(uint16_t temp, int16_t ambient) {
-  if (tip_mask & CFG_THERM == 0) ambient = ambient_tempC; 
+  if (tip_mask & CFG_THERM == 0) ambient = ambient_tempC;
   // The temperature difference between current ambient temperature and ambient temperature during tip calibration
   int d = ambient - tip_ambient;
   uint16_t tempH = 0;
