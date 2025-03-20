@@ -116,7 +116,7 @@ void setup() {
   wrkScr.next = &offScr;
   wrkScr.nextL = &pwrScr;
   wrkScr.main = &offScr;
-  offScr.no_iron = &errScr;
+  wrkScr.no_iron = &errScr;
 
   errScr.next = &offScr;
   errScr.nextL = &offScr;

@@ -2,6 +2,7 @@
 
 void mainSCREEN::init(void) {
   pIron->switchPower(false);
+  pD->noBacklight();
   uint16_t temp_set = pIron->presetTemp();
   int16_t ambient = pIron->ambientTemp();
   temp_set = pCfg->tempToHuman(temp_set, ambient);  // The preset temperature in the human readable units
@@ -148,6 +149,7 @@ SCREEN* actSCREEN::render(uint32_t ms) {
 }
 
 void workSCREEN::init(void) {
+  pD->backlight();
   uint16_t temp_set = pIron->presetTemp();
   int16_t ambient = pIron->ambientTemp();
   bool is_celsius = pCfg->isCelsius();
@@ -157,6 +159,7 @@ void workSCREEN::init(void) {
   else
     pEnc->reset(tempH, temp_minF, temp_maxF, 1, 5);
   pIron->switchPower(true);
+  
   ready = false;
   lowpower_mode = false;
   lowpower_time = 0;
@@ -368,6 +371,7 @@ SCREEN* powerSCREEN::menu_long(void) {
 
 
 void configSCREEN::init(void) {
+  pD->backlight();
   mode = 0;
   // 0 - C/F, 1 - buzzer, 2 - switch type, 3 - ambient, 4 - standby temp, 5 - standby time,
   // 6 - off-timeout, 7 - tip calibrate, 8 - atcivate tip, 9 - tune, 10 - save, 11 - cancel

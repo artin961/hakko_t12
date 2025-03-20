@@ -4,10 +4,10 @@
 #include <Arduino.h>
 // Select appropriate display type
 /*
- * Maximum supported custom tips for controller, see iron_tips.h and cfg.h
- * Each custom tip data requires 12 bytes in EEPROM, 504 bytes per 42 tips are required.
- * 
- */
+   Maximum supported custom tips for controller, see iron_tips.h and cfg.h
+   Each custom tip data requires 12 bytes in EEPROM, 504 bytes per 42 tips are required.
+
+*/
 #define MAX_CUSTOM_TIPS (30)
 #define MCALIB_POINTS 8
 #define CONFIG_DISPLAY_TIME 1000
@@ -51,9 +51,10 @@
 #define ADC_CURRENT A0           // Iron current check pin
 #define ADC_THERMISTOR A2          // The thermistor pin to check ambient temperature
 #define ADC_TILT_REED A3          // The tilt/reed switch pin
-#define lcdled_PIN 9          // The simple buzzer to make a noise
 
-
+#define ADC_DDR DDRC
+#define ADC_PORT PORTC 
+#define ADC_BITMASK 0b00001111;
 
 #define H_LENGTH 16
 ////TONES

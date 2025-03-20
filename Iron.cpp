@@ -12,7 +12,7 @@ void FastPWM::init(void) {
   TCCR1A = 0;
   ICR1 = 256;
   TCCR1B = _BV(WGM13) | _BV(CS10);  // Top value = ICR1, prescale = 1; 31250 Hz
-  TCCR1A |= _BV(COM1B1);            // XOR D10 on OC1B, detached from D09
+  TCCR1A |= _BV(COM1B1) | _BV(COM1A1);            // XOR D10 on OC1B, detached from D09
   OCR1B = 0;                        // Switch-off the signal on pin D10;
   TIMSK1 = _BV(TOIE1);              // Enable overflow interrupts @31250 Hz
   interrupts();
@@ -20,9 +20,10 @@ void FastPWM::init(void) {
 
 
 void IRON::init(void) {
-  pinMode(sPIN, INPUT);
-  pinMode(aPIN, INPUT);
-  pinMode(tPIN, INPUT);
+  //MAKE PC0 -PC3 INPUTS NO PULLUPS
+  ADC_DDR &= ~ADC_BITMASK;
+  ADC_PORT &= ~ADC_BITMASK;
+
   fastPWM.init();  // Initialization for 31.5 kHz PWM on D10 pin
   mode = POWER_OFF;
   fix_power = 0;
@@ -68,12 +69,10 @@ void IRON::switchPower(bool on) {
     fastPWM.off();
     fix_power = 0;
     LED_PORT &= ~LED_BITMASK;
-    //disp->noBacklight();
     if (mode != POWER_OFF)
       mode = POWER_COOLING;
     return;
   }
-  //disp->backlight();
   h_power.init();
   mode = POWER_ON;
   lowPowerMode(0);  //GET OUT OF LOW POWER MODE AND RESET PID resetting is handled in lowPowerMode() Artins fix

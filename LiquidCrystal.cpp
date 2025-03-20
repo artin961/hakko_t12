@@ -102,10 +102,12 @@ void LiquidCrystal::setRowOffsets(int row0, int row1)
 
 /********** high level commands, for the user! */
 void LiquidCrystal::backlight() {
-  BACKLIGHT_PORT |= BACKLIGHT_BITMASK;
+  //BACKLIGHT_PORT |= BACKLIGHT_BITMASK;
+  OCR1A=255;
 }
 void LiquidCrystal::noBacklight() {
-  BACKLIGHT_PORT &= ~BACKLIGHT_BITMASK;
+  //BACKLIGHT_PORT &= ~BACKLIGHT_BITMASK;
+  OCR1A=60;
 }
 void LiquidCrystal::clear()
 {

@@ -258,7 +258,6 @@ void IRON_CFG::applyCalibration(uint16_t tip[3]) {
 }
 
 void IRON_CFG::saveConfig(uint8_t off, bool cels, bool buzzer, bool ambient, uint16_t low_temp, uint8_t low_to, bool reed) {
-  Serial.println("BEFORE-" + String(Config.bit_mask, BIN));
   if (off > 30) off = 0;
   Config.off_timeout = off;
   bool cfg_celsius = Config.bit_mask & CFG_CELSIUS;
@@ -279,7 +278,6 @@ void IRON_CFG::saveConfig(uint8_t off, bool cels, bool buzzer, bool ambient, uin
   if (cels)    Config.bit_mask |= CFG_CELSIUS;
   if (buzzer)  Config.bit_mask |= CFG_BUZZER;
   if (ambient) Config.bit_mask |= CFG_THERM;
-  Serial.println("AFTER-" + String(Config.bit_mask, BIN));
   save();                                     // Save new data into the EEPROM
 }
 
