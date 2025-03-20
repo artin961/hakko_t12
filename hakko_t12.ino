@@ -19,9 +19,9 @@
 #include "vars.h"
 #include <avr/wdt.h> /* Header for watchdog timers in AVR */
 
-#include "Global_definitions.h"
 #include "Buzzer.h"
 #include "PID.h"
+#include "LCD.h"
 
 
 
@@ -1633,7 +1633,7 @@ void pidSCREEN::showCfgInfo(void) {
 
 DSPL disp;
 RENC encoder;
-IRON iron(probePIN, checkPIN, termisPIN, tiltswPIN);
+IRON iron(ADC_THERMOCOUPLE, ADC_CURRENT, ADC_THERMISTOR, ADC_TILT_REED);
 IRON_CFG ironCfg(MAX_CUSTOM_TIPS);  // See config.h
 BUZZER simpleBuzzer;
 TIPS tips;

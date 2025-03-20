@@ -1,5 +1,4 @@
 #include "encoder.h"
-#include "Global_definitions.h"
 
 //------------------------------------------ class BUTTON ------------------------------------------------------
 BUTTON::BUTTON(uint16_t to = 3000) {
