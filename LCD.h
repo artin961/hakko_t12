@@ -12,7 +12,6 @@ const uint8_t LCD_DB5_PIN = 6;
 const uint8_t LCD_DB6_PIN = 7;
 const uint8_t LCD_DB7_PIN = 8;
 
-//------------------------------------------ class lcd DSPLay for soldering IRON -----------------------------
 class DSPL : protected LiquidCrystal
 {
   public:
@@ -47,7 +46,7 @@ class DSPL : protected LiquidCrystal
     void msgDefault();                                       // Show 'default' message (load default configuration)
     void msgSelectTip(void);                                 // Show 'iron tip' message
     void msgActivateTip(void);                               // Show 'act. tip' message
-    void setupMode(uint8_t mode, bool tune, uint16_t p = 0); // Show the configuration mode [0 - 11]
+    void setupMode(uint8_t mode, bool tune, uint16_t p = 0,  bool celsuis = true); // Show the configuration mode [0 - 11]
     void percent(uint8_t Power);                             // Show the percentage
     void mark(char sym, bool on);                            // Show mark sign if true
     void calibrated(bool calibrated);                        // Show '*' if the tip was not calibrated

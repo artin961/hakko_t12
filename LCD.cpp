@@ -119,17 +119,18 @@ void DSPL::msgDefault() {
   LiquidCrystal::print(F(" default        "));
 }
 
-void DSPL::setupMode(uint8_t mode, bool tune, uint16_t p)
+void DSPL::setupMode(uint8_t mode, bool tune, uint16_t p, bool celsius)
 {
   LiquidCrystal::clear();
   if (mode > 11)
     return; // Prevent out-of-bounds access
 
-  LiquidCrystal::print(tune ? "Setup" : modes[mode]);
+  LiquidCrystal::print(tune ?  modes[mode] : "Setup");
+  LiquidCrystal::setCursor(1, 1);
 
   if (tune)
   {
-    LiquidCrystal::setCursor(1, 1);
+
     char buff[6];
     switch (mode)
     {
@@ -146,11 +147,13 @@ void DSPL::setupMode(uint8_t mode, bool tune, uint16_t p)
       case 4:
       case 5:
       case 6:
-        sprintf(buff, "%3d%s", p, (mode == 6) ? "m" : "s");
+        sprintf(buff, "%3d%c", p, (mode == 6) ? 'm' : ((mode == 5) ? 's' : (celsius ? 'C' : 'F')));
         LiquidCrystal::print(buff);
         break;
     }
   }
+  else
+    LiquidCrystal::print(modes[mode]);
 }
 
 void DSPL::percent(uint8_t  Power) {

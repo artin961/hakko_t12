@@ -14,7 +14,6 @@
 #include <EEPROM.h>
 #include "config.h"
 #include "encoder.h"
-#include "cfg.h"
 #include "iron_tips.h"
 #include "vars.h"
 #include <avr/wdt.h> /* Header for watchdog timers in AVR */
@@ -32,15 +31,15 @@ BUZZER simpleBuzzer;
 TIPS tips;
 
 mainSCREEN offScr(&iron, &disp, &encoder, &simpleBuzzer, &ironCfg);
-tipSCREEN selScr(&iron, &disp, &encoder, &ironCfg);
+tipSCREEN selScr(&iron, &disp, &encoder, &simpleBuzzer, &ironCfg);
 workSCREEN wrkScr(&iron, &disp, &encoder, &simpleBuzzer, &ironCfg);
-errorSCREEN errScr(&iron, &disp, &simpleBuzzer);
-powerSCREEN pwrScr(&iron, &disp, &encoder, &ironCfg);
-configSCREEN cfgScr(&iron, &disp, &encoder, &ironCfg, &simpleBuzzer);
-calibSCREEN tipScr(&iron, &disp, &encoder, &ironCfg, &simpleBuzzer);
-actSCREEN actScr(&iron, &disp, &encoder, &ironCfg);
-tuneSCREEN tuneScr(&iron, &disp, &encoder, &simpleBuzzer);
-//pidSCREEN		pidScr(&iron, &encoder);
+errorSCREEN errScr(&iron, &disp, &encoder, &simpleBuzzer, &ironCfg);
+powerSCREEN pwrScr(&iron, &disp, &encoder, &simpleBuzzer, &ironCfg);
+configSCREEN cfgScr(&iron, &disp, &encoder, &simpleBuzzer, &ironCfg);
+calibSCREEN tipScr(&iron, &disp, &encoder, &simpleBuzzer, &ironCfg);
+actSCREEN actScr(&iron, &disp, &encoder, &simpleBuzzer, &ironCfg);
+tuneSCREEN tuneScr(&iron, &disp, &encoder, &simpleBuzzer, &ironCfg);
+//pidSCREEN		pidScr(CONFIG_DISPLAY_TIME, &iron, &disp, &encoder, &simpleBuzzer, &ironCfg);
 
 SCREEN* pCurrentScreen = &offScr;
 //SCREEN *pCurrentScreen = &pidScr;
@@ -78,6 +77,7 @@ ISR(TIMER1_OVF_vect) {
 void setup() {
   wdt_reset();         /* Reset the watchdog */
   wdt_enable(WDTO_2S); /* Enable the watchdog with a timeout of 2 seconds */
+
 #ifdef DEBUGEEE
   Serial.begin(115200);
 #endif
@@ -86,6 +86,8 @@ void setup() {
   pinMode(ledPIN, OUTPUT);
   digitalWrite(ledPIN, HIGH);
   digitalWrite(lcdled_PIN, HIGH);
+
+
   disp.init();
   // Load configuration parameters
   ironCfg.init();
