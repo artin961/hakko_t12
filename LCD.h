@@ -2,7 +2,7 @@
 #define _DSPL1602_H_
 #include "Config.h"
 #include "LiquidCrystal.h"
-#include "iron_tips.h"
+#include "IronTips.h"
 
 class DSPL : protected LiquidCrystal
 {

@@ -13,7 +13,7 @@
 // Edit the configuration file to select appropriate display type
 #include "Config.h"
 #include "Encoder.h"
-#include "iron_tips.h"
+#include "IronTips.h"
 #include "vars.h"
 #include <avr/wdt.h> /* Header for watchdog timers in AVR */
 

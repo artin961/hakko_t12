@@ -1,7 +1,7 @@
 #ifndef _CFG_H
 #define _CFG_H
 #include <Arduino.h>
-#include "iron_tips.h"
+#include "IronTips.h"
 #include "vars.h"
 //#define DEBUGEEE
 /*
