@@ -1,5 +1,5 @@
-#ifndef _EMP_AVARAGE_H_
-#define _EMP_AVARAGE_H_
+#ifndef _EMP_AVARAGE_H
+#define _EMP_AVARAGE_H
 #include <Arduino.h>
 #include "Config.h"
 

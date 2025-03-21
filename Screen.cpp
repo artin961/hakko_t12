@@ -35,8 +35,8 @@ void mainSCREEN::rotaryValue(int16_t value) {
 
 SCREEN* mainSCREEN::render(uint32_t ms) {
   SCREEN* nxt = this;
-  // If no Iron connected swith screen
-  if (no_iron && pIron->checkIron()) {  // Check that the IRON is connected
+  // If iron is disconnected go to screen no_iron
+  if (no_iron && pIron->checkIronDisconnected()) {  // Check that the IRON is connected
     nxt = no_iron;
   }
 
@@ -81,12 +81,14 @@ SCREEN* mainSCREEN::render(uint32_t ms) {
 
 
 void tipSCREEN::init(void) {
+  pBz->shortBeep();
   pIron->switchPower(false);
   old_tip = pCfg->tipIndex();
   pEnc->reset(old_tip, 0, pCfg->tipsLoaded(), 1, 1, true);  // Select the tip by the rotary encoder
-  forceRedraw();
+  //Clear Screen and add TIP: only once
   pD->clear();
   pD->msgSelectTip();
+  forceRedraw();
 }
 
 void tipSCREEN::rotaryValue(int16_t value) {
@@ -100,18 +102,21 @@ void tipSCREEN::rotaryValue(int16_t value) {
   temp = pCfg->humanToTemp(temp, ambient);  // Translate previously set temperature in human readable units into internal value
   pIron->setTemp(temp);                     // Install previously set temperature into the IRON by new tip calibration
   forceRedraw();
+  pBz->shortBeep();
 }
 
 SCREEN* tipSCREEN::render(uint32_t ms) {
-  SCREEN* nxt = this;
-  if (no_iron && !pIron->checkIron()) {  // Check that the IRON is disconnected
-    nxt = no_iron;
+  // If iron is reconnected return to main screen, tip screen no Iron points to offScreen
+  if (no_iron && !pIron->checkIronDisconnected()) {  // Check that the IRON is disconnected
+    pBz->shortBeep();
     pIron->initTempHistory();  // The new tip is connected, reset the temp history
+    return no_iron;
   }
 
   pD->tip(pCfg->tipName(), false);
   pD->mark('*', !pCfg->isCalibrated());
-  return nxt;
+
+  return this;
 }
 
 void actSCREEN::init(void) {
@@ -187,7 +192,7 @@ void workSCREEN::rotaryValue(int16_t value) {  // Setup new preset temperature b
 
 SCREEN* workSCREEN::render(uint32_t ms) {
   SCREEN* nxt = this;
-  if (no_iron && pIron->checkIron()) {  // Check that the IRON is connected
+  if (no_iron && pIron->checkIronDisconnected()) {  // Check that the IRON is connected
     nxt = no_iron;
   }
   if (ready)
@@ -206,14 +211,14 @@ SCREEN* workSCREEN::render(uint32_t ms) {
   // uint16_t td = pIron->tempDispersion();
   //uint16_t pd = pIron->powerDispersion();
   int ap = pIron->getAvgPower();
-  uint16_t low_temp = pCfg->lowTemp();  // 'Standby temperature' setup in the main menu
+  uint16_t low_temp = pCfg->getLowTemp();  // 'Standby temperature' setup in the main menu
   if ((abs(temp_set - temp) < 3) && (pIron->tempDispersion() <= 150) && (ap > 0)) {
     if (!ready) {
       pBz->shortBeep();
       ready = true;
       pD->msgReady();
       if (low_temp)
-        lowpower_time = ms + (uint32_t)pCfg->lowTimeout() * 1000;
+        lowpower_time = ms + (uint32_t)pCfg->getLowTimeout() * 1000;
       update_screen = ms + (update_period << 2);
       return this;
     }
@@ -278,7 +283,7 @@ void workSCREEN::adjustPresetTemp(void) {
 void workSCREEN::hwTimeout(uint16_t low_temp, bool tilt_active) {
   uint32_t now_ms = millis();
   if (tilt_active) {                                               // If the IRON is used, Reset standby time
-    lowpower_time = now_ms + (uint32_t)pCfg->lowTimeout() * 1000;  // Convert timeout to milliseconds
+    lowpower_time = now_ms + (uint32_t)pCfg->getLowTimeout() * 1000;  // Convert timeout to milliseconds
     if (lowpower_mode) {
       ///artin// If the IRON is in low power mode, return to main working mode
       pIron->lowPowerMode(0);
@@ -292,7 +297,7 @@ void workSCREEN::hwTimeout(uint16_t low_temp, bool tilt_active) {
     if (lowpower_time) {              //and we are not in low power mode
       if (now_ms >= lowpower_time) {  //and it is time to go to low power mode
         int16_t ambient = pIron->ambientTemp();
-        uint16_t temp_low = pCfg->lowTemp();
+        uint16_t temp_low = pCfg->getLowTemp();
         uint16_t temp = pCfg->humanToTemp(temp_low, ambient);
         pIron->lowPowerMode(temp);
         auto_off_notified = false;  //reset timeout for auto power off
@@ -301,7 +306,7 @@ void workSCREEN::hwTimeout(uint16_t low_temp, bool tilt_active) {
         return;
       }
     } else {
-      lowpower_time = now_ms + (uint32_t)pCfg->lowTimeout() * 1000;
+      lowpower_time = now_ms + (uint32_t)pCfg->getLowTimeout() * 1000;
     }
   }
 }
@@ -323,7 +328,8 @@ void powerSCREEN::init(void) {
 SCREEN* powerSCREEN::render(uint32_t ms) {
 
   SCREEN* nxt = this;
-  if (no_iron && pIron->checkIron()) {  // Check that the IRON is connected
+  // If iron is disconnected go to screen no_iron
+  if (no_iron && pIron->checkIronDisconnected()) {
     nxt = no_iron;
   }
   uint16_t temp = pIron->tempAverage();
@@ -383,8 +389,8 @@ void configSCREEN::init(void) {
   reed = pCfg->isReedType();
   ambient = pCfg->isAmbientSensor();
   off_timeout = pCfg->getOffTimeout();
-  low_temp = pCfg->lowTemp();
-  low_timeout = pCfg->lowTimeout();
+  low_temp = pCfg->getLowTemp();
+  low_timeout = pCfg->getLowTimeout();
   pD->clear();
   pD->setupMode(0, false, 0);
   this->setSCRtimeout(30);

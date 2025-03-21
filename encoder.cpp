@@ -93,7 +93,7 @@ uint8_t BUTTON::buttonTick(void) {
 RENC::RENC(int16_t init_pos) : BUTTON() {
   pt = 0; pos = init_pos;
   min_pos = -32767; max_pos = 32766; ch_b = false; increment = 1;
-  changed = 0;
+  last_changed_ms = 0;
   is_looped = false;
 }
 
@@ -128,7 +128,8 @@ void RENC::reset(int16_t init_pos, int16_t low, int16_t upp, uint8_t inc, uint8_
   is_looped = looped;
 }
 
-void RENC::encoderIntr(void) {                                  // Interrupt function, called when the channel A of encoder changed
+void RENC::encoderIntr(void) {                                  // Interrupt function, called when the channel A of encoder change
+  value_changed = true;
   bool rUp = (ENCODER_PIN & ENCODER_CLOCK_BITMASK);
   unsigned long now_t = millis();
   if (!rUp) {                                                 // The channel A has been "pressed"
@@ -140,8 +141,8 @@ void RENC::encoderIntr(void) {                                  // Interrupt fun
     if (pt > 0) {
       uint8_t inc = increment;
       if ((now_t - pt) < over_press) {
-        if ((now_t - changed) < fast_timeout) inc = fast_increment;
-        changed = now_t;
+        if ((now_t - last_changed_ms) < fast_timeout) inc = fast_increment;
+        last_changed_ms = now_t;
         if (ch_b) pos -= inc; else pos += inc;
         if (pos > max_pos) {
           if (is_looped)

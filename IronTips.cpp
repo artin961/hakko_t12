@@ -1,4 +1,3 @@
-#include <string.h>
 #include "IronTips.h"
 
 // Single string with all tip names in PROGMEM

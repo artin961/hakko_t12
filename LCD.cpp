@@ -16,6 +16,8 @@ void DSPL::init(void) {
 void DSPL::tip(const char *tip_name, bool top) {
   uint8_t  y = 1; if (top) y = 0;
   LiquidCrystal::setCursor(0, y);
+  if (top)
+    LiquidCrystal::print(F("TIP:"));
   LiquidCrystal::print(tip_name);
   for (uint8_t i = strlen(tip_name); i < 16; ++i)
     LiquidCrystal::print(' ');
@@ -23,12 +25,12 @@ void DSPL::tip(const char *tip_name, bool top) {
 
 void DSPL::msgSelectTip(void) {
   LiquidCrystal::setCursor(0, 0);
-  LiquidCrystal::print(F("TIP:            "));
+  LiquidCrystal::print(F("TIP:"));
 }
 
 void DSPL::msgActivateTip(void) {
   LiquidCrystal::setCursor(0, 0);
-  LiquidCrystal::print(F("activate tip    "));
+  LiquidCrystal::print(F("Activate tip:"));
 }
 void DSPL::tSet(uint16_t t, bool celsius)
 {
@@ -41,10 +43,11 @@ void DSPL::tSet(uint16_t t, bool celsius)
 void DSPL::tCurr(uint16_t t) {
   char buff[8];
   LiquidCrystal::setCursor(0, 1);
+  LiquidCrystal::print("Act:");
   if (t < 1000) {
-    sprintf(buff, "Act:%3d", t);
+    sprintf(buff, "%3d", t);
   } else {
-    LiquidCrystal::print(F("xxx"));
+    LiquidCrystal::print(F("ERR"));
     return;
   }
   LiquidCrystal::print(buff);

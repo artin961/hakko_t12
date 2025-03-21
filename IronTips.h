@@ -1,7 +1,9 @@
-#ifndef _IRON_TIPS_H_
-#define _IRON_TIPS_H_
+#ifndef _IRON_TIPS_H
+#define _IRON_TIPS_H
 
 #include <Arduino.h>
+#include <string.h>
+
 
 // The length of the tip name
 #define tip_name_sz 5

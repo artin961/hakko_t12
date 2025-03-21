@@ -1,5 +1,5 @@
-#ifndef _ENCODER_H_
-#define _ENCODER_H_
+#ifndef _ENCODER_H
+#define _ENCODER_H
 
 #include "EmpAvarage.h"
 #include "Config.h"
@@ -44,6 +44,11 @@ class RENC : public BUTTON {
     int16_t     read(void)                      {
       return pos;
     }
+    bool changed(void) {
+      bool cg=value_changed;
+      value_changed = false;
+      return cg;
+    }
     void        reset(int16_t init_pos, int16_t low, int16_t upp, uint8_t inc = 1, uint8_t fast_inc = 0, bool looped = false);
     bool        write(int16_t initPos);
     void        encoderIntr(void);
@@ -52,10 +57,11 @@ class RENC : public BUTTON {
 
     int32_t     min_pos, max_pos;
     bool        is_looped;                      // Whether the encoder is looped
+    bool value_changed = false;                 // Indicate if value changed from encoder rotation
     uint8_t     increment;                      // The value to add or subtract for each encoder tick
     uint8_t     fast_increment;                 // The value to change encoder when in runs quickly
     volatile uint32_t   pt;                     // Time in ms when the encoder was rotaded
-    volatile uint32_t   changed;                // Time in ms when the value was changed
+    volatile uint32_t   last_changed_ms;                // Time in ms when the value was changed
     volatile bool       ch_b;
     const uint16_t      fast_timeout    = 300;  // Time in ms to change encoder quickly
     const uint16_t      over_press      = 1000;

@@ -1,5 +1,5 @@
-#ifndef _SCREEN_H_
-#define _SCREEN_H_
+#ifndef _SCREEN_H
+#define _SCREEN_H
 #include <Arduino.h>
 #include "Iron.h"
 #include "LCD.h"

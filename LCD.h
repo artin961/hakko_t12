@@ -1,5 +1,5 @@
-#ifndef _DSPL1602_H_
-#define _DSPL1602_H_
+#ifndef _LCD_H
+#define _LCD_H
 #include "Config.h"
 #include "LiquidCrystal.h"
 #include "IronTips.h"

@@ -1,5 +1,5 @@
-#ifndef _PID_H_
-#define _PID_H_
+#ifndef _PID_H
+#define _PID_H
 #include <stdint.h>
 
 class PID

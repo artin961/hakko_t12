@@ -62,17 +62,18 @@ void CONFIG::init(void) {
   can_write = true;
 }
 
+bool CONFIG::load(void) {
+  bool is_valid = readRecord(r_addr, next_rec_ID);
+  next_rec_ID ++;
+  return is_valid;
+}
+
 void CONFIG::getConfig(struct cfg &Cfg) {
   memcpy(&Cfg, &Config, sizeof(struct cfg));
 }
 
 void CONFIG::updateConfig(struct cfg &Cfg) {
   memcpy(&Config, &Cfg, sizeof(struct cfg));
-}
-
-bool CONFIG::saveConfig(struct cfg &Cfg) {
-  updateConfig(Cfg);
-  return save();                              // Save new data into the EEPROM
 }
 
 bool CONFIG::save(void) {
@@ -102,10 +103,9 @@ bool CONFIG::save(void) {
   return true;
 }
 
-bool CONFIG::load(void) {
-  bool is_valid = readRecord(r_addr, next_rec_ID);
-  next_rec_ID ++;
-  return is_valid;
+bool CONFIG::saveConfig(struct cfg &Cfg) {
+  updateConfig(Cfg);
+  return save();                              // Save new data into the EEPROM
 }
 
 bool CONFIG::readRecord(uint16_t addr, uint32_t &rec_ID) {

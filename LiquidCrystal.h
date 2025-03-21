@@ -1,5 +1,5 @@
-#ifndef LiquidCrystal_h
-#define LiquidCrystal_h
+#ifndef _LIQUID_CRYSTAL_H
+#define _LIQUID_CRYSTAL_H
 
 #include <inttypes.h>
 #include "Print.h"

@@ -1,5 +1,5 @@
-#ifndef _IRON_H_
-#define _IRON_H_
+#ifndef _IRON_H
+#define _IRON_H
 #include <Arduino.h>
 
 #include "PID.h"
@@ -60,7 +60,7 @@ class IRON : protected PID {
     }
 
 
-    bool checkIron(void);           // Check the IRON, return true if the iron is not connected
+    bool checkIronDisconnected(void);           // Check the IRON, return true if the iron is not connected
     void keepTemp(void);            // Keep the IRON temperature, called by Timer1 interrupt
     uint8_t appliedPower(void);     // Power applied to the IRON in percents
     void setTemp(uint16_t t);       // Set the temperature to be kept (internal units)
@@ -91,7 +91,7 @@ class IRON : protected PID {
     bool disconnected;                                       // Whether no current through the IRON (the iron disconnected)
     uint32_t check_tilt_ms = 0;                              // The time in ms when check the tilt switch next time
     int h_counter;                                           // Put the temperature and power to the history, when the counter become 0
-    uint8_t applied_power = 0;                               // The applied power to the IRON, used in checkIron()
+    uint8_t applied_power = 0;                               // The applied power to the IRON, used in checkIronDisconnected()
     volatile PowerMode mode = POWER_OFF;                     // Working mode of the IRON
     volatile bool chill;                                     // Whether the IRON should be cooled (preset temp is lower than current)
     HISTORY h_power;                                         // The history data of power applied values

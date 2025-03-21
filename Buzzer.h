@@ -1,5 +1,5 @@
-#ifndef _BUZZER_H_
-#define _BUZZER_H_
+#ifndef _BUZZER_H
+#define _BUZZER_H
 class BUZZER {
   public:
     BUZZER() {

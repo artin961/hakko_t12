@@ -146,7 +146,6 @@ ISR(INT1_vect) {
 // The main loop
 void loop() {
   wdt_reset(); /* Reset the watchdog */
-  static int16_t old_pos = encoder.read();
 
   SCREEN* nxt = pCurrentScreen->returnToMain();
   if (nxt != pCurrentScreen) {  // return to the main screen by timeout
@@ -154,10 +153,8 @@ void loop() {
     pCurrentScreen->init();
   }
 
-  int16_t pos = encoder.read();
-  if (old_pos != pos) {
-    pCurrentScreen->rotaryValue(pos);
-    old_pos = pos;
+  if (encoder.changed()) {
+    pCurrentScreen->rotaryValue(encoder.read());
     if (pCurrentScreen->isSetup())
       pCurrentScreen->resetTimeout();
   }

@@ -82,7 +82,7 @@ bool IRON::isOn(void) {
   return (mode == POWER_ON || mode == POWER_FIXED);
 }
 
-bool IRON::checkIron(void) {
+bool IRON::checkIronDisconnected(void) {
   if (millis() < check_iron_ms)
     return disconnected;
 
