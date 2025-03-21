@@ -159,7 +159,7 @@ void workSCREEN::init(void) {
   else
     pEnc->reset(tempH, temp_minF, temp_maxF, 1, 5);
   pIron->switchPower(true);
-  
+
   ready = false;
   lowpower_mode = false;
   lowpower_time = 0;

@@ -114,21 +114,24 @@ bool IRON::checkIron(void) {
 
 // This routine is used to keep the IRON temperature near required value and is activated by the Timer1
 void IRON::keepTemp(void) {
+  //LED_PORT |= LED_BITMASK;
   uint16_t ambient = analogRead(aPIN);  // Update ambient temperature
   amb_int.update(ambient);
   uint16_t t = analogRead(sPIN);       // Read the IRON temperature
+  //LED_PORT &= ~LED_BITMASK;
+
   volatile uint16_t t_set = temp_set;  // The preset temperature depends on usual/low power mode
   if (temp_low) t_set = temp_low;
 
   if ((t >= temp_max + 20) || (t > (t_set + 100))) {  // Prevent global over heating
     if (mode == POWER_ON) chill = true;               // Turn off the power in main working mode only;
   }
-  if (t < temp_max) {  // Do not save to the history readings when the IRON is disconnected
-    if (--h_counter < 0) {
-      h_temp.update(t);
-      h_counter = h_max_counter;
-    }
+  //if (t < temp_max) {  // Do not save to the history readings when the IRON is disconnected
+  if (--h_counter < 0) {
+    h_temp.update(t);
+    h_counter = h_max_counter;
   }
+  //}
 
   int32_t p = 0;
   switch (mode) {
