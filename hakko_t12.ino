@@ -24,7 +24,7 @@
 
 DSPL disp;
 RENC encoder;
-IRON iron(ADC_THERMOCOUPLE, ADC_CURRENT, ADC_THERMISTOR, ADC_TILT_REED);
+IRON iron;
 IRON_CFG ironCfg(MAX_CUSTOM_TIPS);  // See config.h
 BUZZER simpleBuzzer;
 TIPS tips;

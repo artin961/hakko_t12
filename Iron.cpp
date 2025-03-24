@@ -28,7 +28,7 @@ void IRON::init(void) {
   mode = POWER_OFF;
   fix_power = 0;
   applied_power = 0;
-  disconnected = true;  // Do not read the ambient temperature when the IRON is connected
+  disconnected = true;  // Do not read the ambient temperature when the IRON is not connected
   check_iron_ms = 0;
   resetPID(h_temp.read());
   h_counter = h_max_counter;
@@ -92,7 +92,7 @@ bool IRON::checkIronDisconnected(void) {
     fastPWM.duty(50);                 // Quarter of maximum power
     for (uint8_t i = 0; i < 5; ++i) {  // Make sure we check the current in active phase of PWM signal
       delayMicroseconds(31);
-      uint16_t c = analogRead(cPIN);  // Check the current through the IRON
+      uint16_t c = analogRead(ADC_CURRENT);  // Check the current through the IRON
       if (c > curr) curr = c;         // The maximum value
     }
     fastPWM.off();
@@ -100,7 +100,7 @@ bool IRON::checkIronDisconnected(void) {
       curr = min_curr * 2;         // This is enough to ensure the IRON is connected
     curr = current.average(curr);  // Calculate exponential average value of the current
   } else {
-    curr = analogRead(cPIN);
+    curr = analogRead(ADC_CURRENT);
   }
   if (mode == POWER_OFF || mode == POWER_COOLING) {  // If the soldering IRON is set to be switched off
     fastPWM.off();                                   // Surely power off the IRON
@@ -115,9 +115,9 @@ bool IRON::checkIronDisconnected(void) {
 // This routine is used to keep the IRON temperature near required value and is activated by the Timer1
 void IRON::keepTemp(void) {
   //LED_PORT |= LED_BITMASK;
-  uint16_t ambient = analogRead(aPIN);  // Update ambient temperature
+  uint16_t ambient = analogRead(ADC_THERMISTOR);  // Update ambient temperature
   amb_int.update(ambient);
-  uint16_t t = analogRead(sPIN);       // Read the IRON temperature
+  uint16_t t = analogRead(ADC_THERMOCOUPLE);       // Read the IRON temperature
   //LED_PORT &= ~LED_BITMASK;
 
   volatile uint16_t t_set = temp_set;  // The preset temperature depends on usual/low power mode
@@ -225,21 +225,28 @@ void IRON::adjust(uint16_t t) {
 
 //IF IRON IS ON STAND TILT_TOGLE is set, returns if recently changed
 void IRON::checkSWStatus(void) {
-  if (millis() > check_tilt_ms) {
-    check_tilt_ms = millis() + 30;
-    if (!disconnected) {  // Current through the IRON is registered
-      uint16_t avg = tilt.read();
-      if (300 < avg && avg < 700) {  // Middle state
-        avg = tilt.average(analogRead(tPIN));
-        if (avg < 300 || avg > 700) {  // Toggle state
+  unsigned long currentMillis = millis();
+
+  if (currentMillis > check_tilt_ms) {
+    check_tilt_ms = currentMillis + 30;  // Update the next check time
+
+    uint16_t avg = tilt.read();  // Read tilt sensor
+
+    if (!disconnected) {  // Ensure current is flowing through the IRON
+
+      if (avg > CONFIG_TILT_THR_LOW && avg < CONFIG_TILT_THR_HIGH) {  // Middle range detected
+        avg = tilt.average(analogRead(ADC_TILT_REED));  // Re-evaluate with new reading
+
+        if (avg <= CONFIG_TILT_THR_LOW || avg >= CONFIG_TILT_THR_HIGH) {  // State transition detected
           tilt_toggle = true;
         }
       } else {
-        tilt.update(analogRead(tPIN));
+        tilt.update(avg);  // Update tilt tracking
       }
     }
   }
 }
+
 
 bool IRON::isIronTiltSwitch(bool reed) {
   bool ret = tilt_toggle;

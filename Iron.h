@@ -22,11 +22,7 @@ class FastPWM {
 
 class IRON : protected PID {
   public:
-    IRON(uint8_t sensor_pin, uint8_t check_pin, uint8_t ambient_pin, uint8_t tilt_pin) {
-      sPIN = sensor_pin;
-      cPIN = check_pin;
-      aPIN = ambient_pin;
-      tPIN = tilt_pin;
+    IRON() {
       h_counter = h_max_counter;
     }
     typedef enum { POWER_OFF,
@@ -79,10 +75,8 @@ class IRON : protected PID {
     void adjust(uint16_t t);
     bool isIronTiltSwitch(bool reed);
     void checkSWStatus(void);
-    uint8_t sPIN;
   private:
     FastPWM fastPWM;             // Power the iron using fast PWM through D10 pin using Timer1
-    uint8_t cPIN, aPIN, tPIN;    // The sensor PIN, current check PIN, ambient temperature PIN, tilt switch PIN
     uint16_t temp_set;           // The temperature that should be kept
     uint16_t temp_low;           // Low power mode temperature
     uint8_t fix_power = 0;       // Fixed power value of the IRON (or zero if off)

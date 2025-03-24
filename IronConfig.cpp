@@ -311,27 +311,17 @@ void IRON_CFG::saveCalibrationData(uint16_t tip[3], int8_t ambient) {
    Here index is the tip number in EEPROM tip configuration area
 
 */
-uint8_t IRON_CFG::nextTip(uint8_t index, bool forward) {
-  uint8_t next = index;
+uint8_t IRON_CFG::nextTip(uint8_t old_index, bool forward) {
+  uint8_t next = old_index;
   TIP tip_data;
-  while (true) {
-    if (forward) {
-      next ++;
-      if (next >= MAX_CUSTOM_TIPS)
-        next = 0;
-    } else {
-      if (next > 0)
-        next --;
-      else
-        next = MAX_CUSTOM_TIPS - 1;
+  do {
+    next = (forward) ? (next + 1) % MAX_CUSTOM_TIPS : (next == 0 ? MAX_CUSTOM_TIPS - 1 : next - 1);
+    if (loadTipData(&tip_data, next) && (tip_data.mask & TIP_ACTIVE)) {
+      return next;
     }
-    if (next == index)                      // All the list checked
-      break;
-    if (loadTipData(&tip_data, next) && tip_data.mask & TIP_ACTIVE) {
-      break;
-    }
-  }
-  return next;
+  } while (next != old_index);
+
+  return next;  // Returns the original index if no valid tip is found
 }
 
 bool IRON_CFG::isTipActive(uint8_t global_index) {

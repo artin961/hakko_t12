@@ -84,6 +84,7 @@ void tipSCREEN::init(void) {
   pBz->shortBeep();
   pIron->switchPower(false);
   old_tip = pCfg->tipIndex();
+  //reset(int16_t init_pos, int16_t low, int16_t upp, uint8_t inc, uint8_t fast_inc, bool looped)
   pEnc->reset(old_tip, 0, pCfg->tipsLoaded(), 1, 1, true);  // Select the tip by the rotary encoder
   //Clear Screen and add TIP: only once
   pD->clear();
@@ -92,17 +93,18 @@ void tipSCREEN::init(void) {
 }
 
 void tipSCREEN::rotaryValue(int16_t value) {
-  uint8_t index = pCfg->nextTip(old_tip, value > old_tip);
+  if (old_tip == value)
+    return;
+  uint8_t new_index = pCfg->nextTip(old_tip, value > old_tip);
   uint16_t temp = pIron->presetTemp();  // Preset temperature in internal units
   int16_t ambient = pIron->ambientTemp();
   temp = pCfg->tempToHuman(temp, ambient);  // The temperature in human readable units (Celsius o Fahrenheit)
-  index = pCfg->selectTip(index);
-  old_tip = index;
-  pEnc->write(index);
+  new_index = pCfg->selectTip(new_index);
+  old_tip = new_index;
+  pEnc->write(new_index);
   temp = pCfg->humanToTemp(temp, ambient);  // Translate previously set temperature in human readable units into internal value
   pIron->setTemp(temp);                     // Install previously set temperature into the IRON by new tip calibration
   forceRedraw();
-  pBz->shortBeep();
 }
 
 SCREEN* tipSCREEN::render(uint32_t ms) {
@@ -155,6 +157,7 @@ SCREEN* actSCREEN::render(uint32_t ms) {
 
 void workSCREEN::init(void) {
   pD->backlight();
+  update_period = 100;
   uint16_t temp_set = pIron->presetTemp();
   int16_t ambient = pIron->ambientTemp();
   bool is_celsius = pCfg->isCelsius();
