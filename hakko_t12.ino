@@ -8,6 +8,18 @@
   then the power, supplien to the IRON interrupted and the controller waits for 32 timer interrupts (about 1 ms)
   then the IRON temperature is checked and the power to the IRON restored
   then the controller waits for check_period Timer1 interrupts to restart the all procedure over again
+
+  In order to propperly measure temperatures and work safely the iron should handle around 500C so we have 50C above the max possible target temperature.
+
+  TYPE:         uV/C:     AMP NEEDED:  AMP TARGET:  200:    300:    400:    RESISTORS:
+  HAKKO T12     21uV/C    476          471          405     608     811     470k(100k + 500k trim)
+  JBC C245      41uV/C    244                       422     633     844     250k(100k + 500k trim)
+  JBC C210      10uv/C
+  Generik K     41uV/C    244                       422     633     844     250k(100k + 500k trim)
+
+  Hakko T12 tips Use thermocouple that is producing around 21uV/C
+  K type thermocouples produce around 40uV/C
+  21uV/°C, C245 41uV, and IIRC, C210 about 10uV
 */
 //#define DEBUGEEE
 // Edit the configuration file to select appropriate display type

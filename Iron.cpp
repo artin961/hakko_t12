@@ -230,7 +230,7 @@ void IRON::checkSWStatus(void) {
   if (currentMillis > check_tilt_ms) {
     check_tilt_ms = currentMillis + 30;  // Update the next check time
 
-    uint16_t avg = tilt.read();  // Read tilt sensor
+    uint16_t avg = analogRead(ADC_TILT_REED);  // Read tilt sensor
 
     if (!disconnected) {  // Ensure current is flowing through the IRON
 
