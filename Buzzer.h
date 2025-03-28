@@ -1,3 +1,5 @@
+#ifndef _BUZZER_H
+#define _BUZZER_H
 class BUZZER {
   public:
     BUZZER() {
@@ -6,35 +8,30 @@ class BUZZER {
     }
     void activate(bool on) {
       this->_enabled = on;
-
     }
     void shortBeep(void) {
-      if (this->_enabled)
-        chirp(50, CHIRP_2KHZ);  // Send 2KHz sound signal...
+      chirp(50, CHIRP_2KHZ);  // Send 2KHz sound signal...
     }
     void lowBeep(void) {
-      if (this->_enabled)
-        chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
+      chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
     }
     void doubleBeep(void) {
-      if (this->_enabled) {
-        chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
-        delay(200);
-        chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
-      }
+      chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
+      delay(200);
+      chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
     }
     void failedBeep(void) {
-      if (this->_enabled) {
-        chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
-        delay(200);
-        chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
-        delay(200);
-        chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
-      }
+      chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
+      delay(200);
+      chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
+      delay(200);
+      chirp(150, CHIRP_2KHZ);  // Send 2KHz sound signal...
     }
   private:
     bool _enabled = true;
     void chirp(int playTime, int delayTime) {  ///FUNCTION TO MAKE BUZZES
+      if (!this->_enabled)
+        return;
       long loopTime = (playTime * 1000L) / (delayTime);
       for (int i = 0; i < loopTime; i++) {
         BUZZER_PORT ^= BUZZER_BITMASK;  //TOGGLE BUZZER
@@ -43,3 +40,4 @@ class BUZZER {
       BUZZER_PORT &= ~BUZZER_BITMASK;  //BUZZER PIN OFF JUST IN CASE
     }
 };
+#endif

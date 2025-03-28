@@ -1,23 +1,23 @@
-#include "config.h"
 #include "LCD.h"
-#include "iron_tips.h"
-#define DISPLAY_LOGO "ALab"
-
-
+const char *modes[] = {
+  "Units", "Buzzer", "Switch", "Ambient", "Stby Temp", "Stby Time",
+  "Auto OFF", "Tip config.", "Activate tip", "TUNE", "APPLY", "CANCEL"
+};
 
 void DSPL::init(void) {
   LiquidCrystal::begin(16, 2);
   LiquidCrystal::clear();
-  full_second_line = false;
   LiquidCrystal::setCursor(6, 0);
   LiquidCrystal::print(F(DISPLAY_LOGO));
-  delay(1500);
+  delay(1000);
   LiquidCrystal::clear();
 }
 
 void DSPL::tip(const char *tip_name, bool top) {
   uint8_t  y = 1; if (top) y = 0;
   LiquidCrystal::setCursor(0, y);
+  if (top)
+    LiquidCrystal::print(F("TIP:"));
   LiquidCrystal::print(tip_name);
   for (uint8_t i = strlen(tip_name); i < 16; ++i)
     LiquidCrystal::print(' ');
@@ -25,39 +25,32 @@ void DSPL::tip(const char *tip_name, bool top) {
 
 void DSPL::msgSelectTip(void) {
   LiquidCrystal::setCursor(0, 0);
-  LiquidCrystal::print(F("TIP:            "));
+  LiquidCrystal::print(F("TIP:"));
 }
 
 void DSPL::msgActivateTip(void) {
   LiquidCrystal::setCursor(0, 0);
-  LiquidCrystal::print(F("activate tip    "));
+  LiquidCrystal::print(F("Activate tip:"));
 }
-
-void DSPL::tSet(uint16_t t, bool celsius) {
-  char buff[5];
-  char units = 'C';
-  if (!celsius) units = 'F';
+void DSPL::tSet(uint16_t t, bool celsius)
+{
   LiquidCrystal::setCursor(0, 0);
-  LiquidCrystal::print("Set:");
-  LiquidCrystal::setCursor(4, 0);
-  sprintf(buff, "%3d%c", t, units);
+  char buff[10]; // Ensure space for null-terminator
+  sprintf(buff, "Set:%3d%c", t, celsius ? 'C' : 'F');
   LiquidCrystal::print(buff);
 }
 
 void DSPL::tCurr(uint16_t t) {
   char buff[8];
   LiquidCrystal::setCursor(0, 1);
+  LiquidCrystal::print("Act:");
   if (t < 1000) {
-    sprintf(buff, "Act:%3d", t);
+    sprintf(buff, "%3d", t);
   } else {
-    LiquidCrystal::print(F("xxx"));
+    LiquidCrystal::print(F("ERR"));
     return;
   }
   LiquidCrystal::print(buff);
-  if (full_second_line) {
-    LiquidCrystal::print(F("            "));
-    full_second_line = false;
-  }
 }
 
 void DSPL::pSet(uint8_t  p) {
@@ -82,35 +75,33 @@ void DSPL::timeToOff(uint8_t  sec) {
   LiquidCrystal::print(F("    "));
 }
 
-void DSPL::msgReady(void) {
-  LiquidCrystal::setCursor(8, 0);
-  LiquidCrystal::print(F("   READY"));
-}
+void DSPL::msgStateMsg(const char* message, uint8_t row = 0) {
+  char buffer[9]; // Buffer for 8 characters + null terminator
+  int len = strlen(message);
 
-void DSPL::msgOn(void) {
-  LiquidCrystal::setCursor(8, 0);
-  LiquidCrystal::print(F("      ON"));
-}
+  // Calculate leading spaces
+  int spaces = 8 - len;
+  if (spaces < 0) spaces = 0; // Prevent negative values
 
-void DSPL::msgOff(void) {
-  LiquidCrystal::setCursor(8, 0);
-  LiquidCrystal::print(F("     OFF"));
-}
+  // Fill the buffer with spaces
+  memset(buffer, ' ', spaces);
 
-void DSPL::msgStandby(void) {
-  LiquidCrystal::setCursor(8, 0);
-  LiquidCrystal::print(F("   SLEEP"));
+  // Copy the message after the leading spaces
+  strncpy(buffer + spaces, message, 8 - spaces);
+
+  buffer[8] = '\0'; // Null-terminate the string
+
+  LiquidCrystal::setCursor(8, row); // Start printing from (8,0)
+  LiquidCrystal::print(buffer); // Print to LCD
 }
 
 void DSPL::msgCold(void) {
-  LiquidCrystal::setCursor(0, 1);
-  LiquidCrystal::print(F("        COLD"));
-  full_second_line = true;
+  msgStateMsg("COLD", 1);
 }
 
 void DSPL::msgFail(void) {
   LiquidCrystal::setCursor(0, 1);
-  LiquidCrystal::print(F("   Failed  "));
+  LiquidCrystal::print(F("Heater Failed!"));
 }
 void DSPL::msgTune(void) {
   LiquidCrystal::setCursor(0, 0);
@@ -121,106 +112,44 @@ void DSPL::msgTune(void) {
 
 void DSPL::msgDefault() {
   LiquidCrystal::setCursor(0, 1);
-  LiquidCrystal::print(F(" default        "));
+  LiquidCrystal::print(F("Default...     "));
 }
 
-void DSPL::setupMode(uint8_t mode, bool tune, uint16_t p) {
-  char buff[5];
+void DSPL::setupMode(uint8_t mode, bool tune, uint16_t p, bool celsius)
+{
   LiquidCrystal::clear();
-  if (!tune) {
-    LiquidCrystal::print(F("Setup"));
-    LiquidCrystal::setCursor(1, 1);
-  }
-  switch (mode) {
-    case 0:                                 // C/F. In-line editing
-      LiquidCrystal::print(F("Units"));
-      if (tune) {
-        LiquidCrystal::setCursor(1, 1);//7.1
-        if (p)
-          LiquidCrystal::print(F("Celsius"));
-        else
-          LiquidCrystal::print(F("Fahrenheit"));
-      }
-      break;
-    case 1:                                 // Buzzer
-      LiquidCrystal::print(F("Buzzer"));
-      if (tune) {
-        LiquidCrystal::setCursor(1, 1);
-        if (p)
-          LiquidCrystal::print(F("ON"));
-        else
-          LiquidCrystal::print(F("OFF"));
-      }
-      break;
-    case 2:                                 // Switch type
-      LiquidCrystal::print(F("Switch"));
-      if (tune) {
-        LiquidCrystal::setCursor(1, 1);
-        if (p)
-          LiquidCrystal::print(F("REED"));
-        else
-          LiquidCrystal::print(F("TILT"));
-      }
-      break;
-    case 3:                                 // ambient temperatyre sensor
-      LiquidCrystal::print(F("Ambient"));
-      if (tune) {
-        LiquidCrystal::setCursor(1, 1);
-        if (p)
-          LiquidCrystal::print(F("ON"));
-        else
-          LiquidCrystal::print(F("OFF"));
-      }
-      break;
-    case 4:                                 // standby temperature
-      LiquidCrystal::print(F("Stby Temp"));
-      if (tune) {
-        LiquidCrystal::setCursor(1, 1);
-        if (p > 0) {
-          sprintf(buff, "%3d", p);
-          LiquidCrystal::print(buff);
-        } else {
-          LiquidCrystal::print(" NO");
-        }
-      }
-      break;
-    case 5:                                 // Standby Time
-      LiquidCrystal::print(F("Stby Time"));
-      if (tune) {
-        LiquidCrystal::setCursor(1, 1);
-        sprintf(buff, "%3ds", p);
+  if (mode > 11)
+    return; // Prevent out-of-bounds access
+
+  LiquidCrystal::print(tune ?  modes[mode] : "Setup");
+  LiquidCrystal::setCursor(1, 1);
+
+  if (tune)
+  {
+
+    char buff[6];
+    switch (mode)
+    {
+      case 0:
+        LiquidCrystal::print(p ? "Celsius" : "Fahrenheit");
+        break;
+      case 1:
+      case 3:
+        LiquidCrystal::print(p ? "ON" : "OFF");
+        break;
+      case 2:
+        LiquidCrystal::print(p ? "REED" : "TILT");
+        break;
+      case 4:
+      case 5:
+      case 6:
+        sprintf(buff, "%3d%c", p, (mode == 6) ? 'm' : ((mode == 5) ? 's' : (celsius ? 'C' : 'F')));
         LiquidCrystal::print(buff);
-      }
-      break;
-    case 6:                                 // off-timeout
-      LiquidCrystal::print(F("Auto OFF"));
-      if (tune) {
-        LiquidCrystal::setCursor(1, 1);
-        if (p > 0) {
-          sprintf(buff, "%2dm", p);
-          LiquidCrystal::print(buff);
-        } else {
-          LiquidCrystal::print(" NO");
-        }
-      }
-      break;
-    case 7:                                 // Tip calibrage
-      LiquidCrystal::print(F("tip config."));
-      break;
-    case 8:                                 // Activate tip
-      LiquidCrystal::print(F("activate tip"));
-      break;
-    case 9:                                 // Tune controller
-      LiquidCrystal::print(F("TUNE"));
-      break;
-    case 10:                                // save
-      LiquidCrystal::print(F("APPLY"));
-      break;
-    case 11:                                // cancel
-      LiquidCrystal::print(F("CANCEL"));
-    default:
-      break;
+        break;
+    }
   }
+  else
+    LiquidCrystal::print(modes[mode]);
 }
 
 void DSPL::percent(uint8_t  Power) {

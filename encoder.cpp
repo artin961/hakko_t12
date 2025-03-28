@@ -1,5 +1,4 @@
-#include "encoder.h"
-#include "Global_definitions.h"
+#include "Encoder.h"
 
 //------------------------------------------ class BUTTON ------------------------------------------------------
 BUTTON::BUTTON(uint16_t to = 3000) {
@@ -14,7 +13,6 @@ BUTTON::BUTTON(uint16_t to = 3000) {
 */
 void BUTTON::init(void) {
   // ENSURE INPUTS
-  ENCODER_DDR &= ~ENCODER_DATA_BITMASK;
   ENCODER_DDR &= ~ENCODER_BUTTON_BITMASK;
 
   // ACTIOVATE PULLUPS
@@ -95,26 +93,16 @@ uint8_t BUTTON::buttonTick(void) {
 RENC::RENC(int16_t init_pos) : BUTTON() {
   pt = 0; pos = init_pos;
   min_pos = -32767; max_pos = 32766; ch_b = false; increment = 1;
-  changed = 0;
+  last_changed_ms = 0;
   is_looped = false;
 }
 
 void RENC::init(void) {
   BUTTON::init();
-
-
-
-  //pinMode(m_pin, INPUT_PULLUP);
-  //pinMode(s_pin, INPUT_PULLUP);
-
   // ENSURE INPUTS
-  ENCODER_DDR &= ~ENCODER_DATA_BITMASK;
-  ENCODER_DDR &= ~ENCODER_CLOCK_BITMASK;
-  //ENCODER_DDR &= ~ENCODER_BUTTON_BITMASK;
-
+  ENCODER_DDR &= ~(ENCODER_DATA_BITMASK | ENCODER_CLOCK_BITMASK);
   // ACTIOVATE PULLUPS
-  ENCODER_PORT |= ENCODER_DATA_BITMASK;
-  ENCODER_PORT |= ENCODER_CLOCK_BITMASK;
+  ENCODER_PORT |= (ENCODER_DATA_BITMASK | ENCODER_CLOCK_BITMASK);
 
   // Configure external interrupt INT1 to trigger on any logical change
   EICRA |= (1 << ISC10);  // ISC10=1 and ISC11=0 for triggering on logical change
@@ -122,7 +110,6 @@ void RENC::init(void) {
 
   // Enable the interrupt for INT1
   EIMSK |= (1 << INT1);
-
 }
 
 bool RENC::write(int16_t init_pos) {
@@ -141,7 +128,8 @@ void RENC::reset(int16_t init_pos, int16_t low, int16_t upp, uint8_t inc, uint8_
   is_looped = looped;
 }
 
-void RENC::encoderIntr(void) {                                  // Interrupt function, called when the channel A of encoder changed
+void RENC::encoderIntr(void) {                                  // Interrupt function, called when the channel A of encoder change
+  value_changed = true;
   bool rUp = (ENCODER_PIN & ENCODER_CLOCK_BITMASK);
   unsigned long now_t = millis();
   if (!rUp) {                                                 // The channel A has been "pressed"
@@ -153,8 +141,8 @@ void RENC::encoderIntr(void) {                                  // Interrupt fun
     if (pt > 0) {
       uint8_t inc = increment;
       if ((now_t - pt) < over_press) {
-        if ((now_t - changed) < fast_timeout) inc = fast_increment;
-        changed = now_t;
+        if ((now_t - last_changed_ms) < fast_timeout) inc = fast_increment;
+        last_changed_ms = now_t;
         if (ch_b) pos -= inc; else pos += inc;
         if (pos > max_pos) {
           if (is_looped)
