@@ -15,6 +15,8 @@ void FastPWM::init(void) {
   TCCR1A |= _BV(COM1B1) | _BV(COM1A1);            // XOR D10 on OC1B, detached from D09
   OCR1B = 0;                        // Switch-off the signal on pin D10;
   TIMSK1 = _BV(TOIE1);              // Enable overflow interrupts @31250 Hz
+
+
   interrupts();
 }
 
@@ -36,6 +38,12 @@ void IRON::init(void) {
   h_temp.init();
   current.length(emp_k);
   amb_int.length(4);
+  // Step 1: Enable Pin Change Interrupts for PCINT1 group (Port C)
+  PCICR |= (1 << PCIE1);  // Enable Pin Change Interrupt for PCINT[14:8] (PC group)
+
+  // Step 2: Enable PCINT11 (which is PC3)
+  PCMSK1 |= (1 << PCINT11);  // Enable interrupt on PC3
+
 }
 
 void IRON::setTemp(uint16_t t) {
@@ -228,22 +236,18 @@ void IRON::checkSWStatus(void) {
   unsigned long currentMillis = millis();
 
   if (currentMillis > check_tilt_ms) {
-    check_tilt_ms = currentMillis + 30;  // Update the next check time
+    check_tilt_ms = currentMillis + 100;  // Update the next check time
 
     uint16_t avg = analogRead(ADC_TILT_REED);  // Read tilt sensor
 
+
     if (!disconnected) {  // Ensure current is flowing through the IRON
-
-      if (avg > CONFIG_TILT_THR_LOW && avg < CONFIG_TILT_THR_HIGH) {  // Middle range detected
-        avg = tilt.average(analogRead(ADC_TILT_REED));  // Re-evaluate with new reading
-
-        if (avg <= CONFIG_TILT_THR_LOW || avg >= CONFIG_TILT_THR_HIGH) {  // State transition detected
-          tilt_toggle = true;
-        }
-      } else {
-        tilt.update(avg);  // Update tilt tracking
+      if (tilt_ints > TILT_INTERRUPTS_THRESHHOLD) {
+        tilt_toggle = true;
+        tilt_ints = 0;
       }
     }
+    tilt.update(avg);  // Update tilt tracking
   }
 }
 

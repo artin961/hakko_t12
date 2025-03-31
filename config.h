@@ -52,6 +52,10 @@
 #define ADC_THERMISTOR A2          // The thermistor pin to check ambient temperature
 #define ADC_TILT_REED A3          // The tilt/reed switch pin
 
+#define TILT_PORT PORTC
+#define TILT_PIN PC3
+#define TILT_INTERRUPTS_THRESHHOLD 10
+
 #define ADC_DDR DDRC
 #define ADC_PORT PORTC
 #define ADC_BITMASK 0b00001111;
@@ -62,7 +66,7 @@
 #define CHIRP_2KHZ 250  ///TO GENERATE 2KHZ TONE USING CHIRP FUNCTION
 #define CHIRP_4KHZ 125  ///TO GENERATE 4KHZ TONE USING CHIRP FUNCTION
 
-
+//#define JBC_IRON_OR_GENERIC_K 1
 #ifdef JBC_IRON_OR_GENERIC_K
     // Default tip calibration values
 #define CONFIG_INERNAL_READING_200 422

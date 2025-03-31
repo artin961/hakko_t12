@@ -62,6 +62,7 @@ SCREEN* pCurrentScreen = &offScr;
    keepTemp() function takes 353 mks, about 12 ticks of TIMER1;
    We should wait for 33 timer ticks before checking the temperature after iron was powered off
 */
+
 const uint32_t period_ticks = (31250 * temp_check_period) / 1000 - 33 - 12;
 ISR(TIMER1_OVF_vect) {
   if (iron_off) {              // The IRON is switched off, we need to check the temperature
@@ -83,7 +84,10 @@ ISR(TIMER1_OVF_vect) {
     }
   }
 }
-
+ISR(PCINT1_vect) {
+  if (tilt_ints < 250)
+    tilt_ints++;
+}
 // the setup routine runs once when you press reset:
 void setup() {
   wdt_reset();         /* Reset the watchdog */
